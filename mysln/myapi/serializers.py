@@ -1,9 +1,16 @@
 # serializers.py
 from rest_framework import serializers
 
-from .models import Hero
+from myapi import models
+
 
 class HeroSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = Hero
+        model = models.Hero
         fields = ('name', 'alias')
+
+
+class DHT_dataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.DHT_data
+        fields = ('id', 'timestamp', 'temp', 'hum')

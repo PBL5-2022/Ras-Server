@@ -33,4 +33,4 @@ class DHT_data(models.Model):
 
     # the method which defines string output of class
     def __str__(self):
-        return self.timestamp
+        return str(self.timestamp)

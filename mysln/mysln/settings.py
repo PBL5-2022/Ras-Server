@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'myapi.apps.MyapiConfig',
     'rest_framework',
     'channels',
+    'django_filters',
+    'mycircuit'
 ]
 
 MIDDLEWARE = [
@@ -51,6 +53,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
 
 ROOT_URLCONF = 'mysln.urls'
 

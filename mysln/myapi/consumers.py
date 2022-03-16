@@ -29,29 +29,22 @@ class NotificationConsumer(AsyncWebsocketConsumer):
             "type": "websocket.send",
             "text": "hello world"
         }))
-        self.room_name = 'test_consumer'
-        self.room_group_name = 'test_consumer_group'
+        self.room_name = 'online_user'
+        self.room_group_name = 'online_user'
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
-        self.send({
+        await self.send(json.dumps({
             "type": "websocket.send",
             "text": "room made"
-        })
+        }))
 
     async def websocket_receive(self, event):
-        print(event)
         data_to_get = json.loads(event['text'])
-        user_to_get = await get_user(int(data_to_get))
-        print(user_to_get)
-        get_of = await create_notification(user_to_get)
-        self.room_group_name = 'test_consumer_group'
-        channel_layer = get_channel_layer()
-        await (channel_layer.group_send)(
-            self.room_group_name,
-            {
-                "type": "send_notification",
-                "value": json.dumps(get_of)
-            })
-        print('receive', event)
+        if "group" in data_to_get:
+            await self.channel_layer.group_add(data_to_get["group"], self.channel_name)
+            await self.send(json.dumps({
+                "type": "websocket.send",
+                "text": "join group "+data_to_get["group"]
+            }))
 
     async def websocket_disconnect(self, event):
         print('disconnect', event)
@@ -64,3 +57,10 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         }))
         print('I am here')
         print(event)
+
+    async def system_load(self, event):
+        # Receive data from group
+        await self.send(text_data=json.dumps(event['data']))
+
+    async def logDHT11_collect(self, event):
+        await self.send(text_data=json.dumps(event['data']))
