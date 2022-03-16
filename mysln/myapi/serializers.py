@@ -14,3 +14,9 @@ class DHT_dataSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.DHT_data
         fields = ('id', 'timestamp', 'temp', 'hum')
+
+
+class Led_dataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Led_Data
+        fields = ('id', 'timestamp', 'status')

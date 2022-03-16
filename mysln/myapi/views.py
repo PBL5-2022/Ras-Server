@@ -1,10 +1,11 @@
 
+from random import gauss
 from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.generics import ListAPIView
-from .serializers import DHT_dataSerializer, HeroSerializer
+from .serializers import DHT_dataSerializer, HeroSerializer, Led_dataSerializer
 from myapi import models
 import os
 import json
@@ -12,6 +13,7 @@ from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from rest_framework.decorators import action
 from django_filters.rest_framework import DjangoFilterBackend
+from mycircuit import led
 
 
 class HeroViewSet(viewsets.ModelViewSet):
@@ -51,6 +53,51 @@ class CarsAPIView(APIView):
             serializer = HeroSerializer(cars, many=True)
 
         return Response(serializer.data)
+
+
+class LedManage(APIView):
+    serializer_class = Led_dataSerializer
+
+    def get_queryset(self):
+        leds = models.Led_Data.objects.all()
+        return leds
+
+    def get(self, request, *args, **kwargs):
+        try:
+            result = ""
+            g = led.Led()
+            dht = models.DHT_data.objects
+            if "ledstatus" in request.query_params:
+                led_status = request.query_params["ledstatus"]
+                if led_status == "turnon":
+                    result = g.turnOn()
+                    channel_layer = get_channel_layer()
+                    group_name = 'group_led'
+                    async_to_sync(channel_layer.group_send)(
+                        group_name,
+                        {
+                            'type': 'led_notification',
+                            'target': 'led',
+                            'data': "On"
+                        }
+                    )
+                elif led_status == "turnoff":
+                    result = g.turnOff()
+                    channel_layer = get_channel_layer()
+                    group_name = 'group_led'
+                    async_to_sync(channel_layer.group_send)(
+                        group_name,
+                        {
+                            'type': 'led_notification',
+                            'target': 'led',
+                            'data': "Off"
+                        }
+                    )
+                else:
+                    result = g.status()
+            return Response(result, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
 
 
 class DHT11Manage(APIView):

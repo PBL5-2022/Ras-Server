@@ -34,3 +34,14 @@ class DHT_data(models.Model):
     # the method which defines string output of class
     def __str__(self):
         return str(self.timestamp)
+
+
+class Led_Data(models.Model):
+    timestamp = models.DateTimeField(null=False)
+    status = models.BooleanField(null=False)  # 1 la den sang , 0 la den tat
+    
+    class Meta:
+        ordering = ["-timestamp"]
+        
+    def __str__(self):
+        return str(self.status + " : "+self.timestamp)
