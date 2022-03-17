@@ -20,3 +20,8 @@ class Led_dataSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Led_Data
         fields = ('id', 'timestamp', 'status')
+
+class Schedule_dataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Schedule
+        fields = ('id', 'timestamp','device', 'status','timesetting')

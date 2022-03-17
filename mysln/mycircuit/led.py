@@ -2,6 +2,7 @@
 import RPi.GPIO as GPIO
 import time
 import sqlite3
+import requests
 dbname = '/home/pi/MyPBL5/DjangoAPI/mysln/db.sqlite3'
 
 
@@ -12,14 +13,14 @@ class Led:
         GPIO.setwarnings(False)
         GPIO.setup(self.ledpin, GPIO.OUT)
 
-    def turnOn(self):
+    def turnOn(self, issocketused=True):
         GPIO.output(self.ledpin, GPIO.HIGH)
-        self.logData("1")
+        self.logData("1", issocketused)
         return "Turned on successfullly"
 
-    def turnOff(self):
+    def turnOff(self, issocketused=True):
         GPIO.output(self.ledpin, GPIO.LOW)
-        self.logData("0")
+        self.logData("0", issocketused)
         return "Turned off successfullly"
 
     def status(self):
@@ -28,8 +29,7 @@ class Led:
         if(GPIO.input(self.ledpin) == GPIO.HIGH):
             return "On"
 
-    def logData(self, status):
-
+    def logData(self, status, issocketused):
         conn = sqlite3.connect(dbname)
         curs = conn.cursor()
 
@@ -37,14 +37,22 @@ class Led:
             "INSERT INTO myapi_led_data(timestamp,status) values(datetime('now'), (?))", status)
         conn.commit()
         conn.close()
+        if status == "1":
+            status = "On"
+        else:
+            status = "Off"
+        if issocketused == False:
+            response = requests.post(
+                'http://localhost:8000/led/', data={"status": status})
 
 
 if __name__ == "__main__":
     g = Led()
     if g.status == "On":
-        g.turnOff()
+        g.turnOff(False)
     else:
-        g.turnOn()
+        g.turnOn(False)
+    g.turnOff(False)
     print(g.status())
 
 # Ledpin = 20

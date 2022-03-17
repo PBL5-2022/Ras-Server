@@ -66,7 +66,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps(event['data']))
 
     async def logDHT11_collect(self, event):
-        await self.send(text_data=json.dumps(event['data']))
+        await self.send(text_data=json.dumps({"target": event['target'], "data": event['data']}))
 
     async def led_notification(self, event):
-        await self.send(text_data=json.dumps({event['target']: event['data']}))
+        await self.send(text_data=json.dumps({"target": event['target'], "data": event['data']}))

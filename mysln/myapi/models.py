@@ -39,9 +39,20 @@ class DHT_data(models.Model):
 class Led_Data(models.Model):
     timestamp = models.DateTimeField(null=False)
     status = models.BooleanField(null=False)  # 1 la den sang , 0 la den tat
-    
+
     class Meta:
         ordering = ["-timestamp"]
-        
+
     def __str__(self):
         return str(self.status + " : "+self.timestamp)
+
+
+class Schedule(models.Model):
+    id = models.CharField(max_length=200, primary_key=True)
+    device = models.CharField(max_length=60)
+    status = models.CharField(max_length=60)
+    timesetting = models.CharField(max_length=60)
+    timestamp = models.DateTimeField(null=True)
+
+    def __str__(self):
+        return str(self.id+" :"+self.device + " : "+self.timesetting+" : "+self.status+": "+self.timestamp)

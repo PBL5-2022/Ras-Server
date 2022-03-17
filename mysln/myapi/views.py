@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.generics import ListAPIView
-from .serializers import DHT_dataSerializer, HeroSerializer, Led_dataSerializer
+from .serializers import DHT_dataSerializer, HeroSerializer, Led_dataSerializer, Schedule_dataSerializer
 from myapi import models
 import os
 import json
@@ -14,13 +14,14 @@ from channels.layers import get_channel_layer
 from rest_framework.decorators import action
 from django_filters.rest_framework import DjangoFilterBackend
 from mycircuit import led
+import string
+import random
+import mycircuit.mycron as cron
 
 
 class HeroViewSet(viewsets.ModelViewSet):
-    print("con cac")
     queryset = models.Hero.objects.all().order_by('alias')
     serializer_class = HeroSerializer
-    print("con cac")
 
     @action(methods=['get'], detail=True)
     def get_by_id(self, request, alias=None):
@@ -55,6 +56,33 @@ class CarsAPIView(APIView):
         return Response(serializer.data)
 
 
+class ScheduleManage(APIView):
+    serializer_class = Schedule_dataSerializer
+
+    def post(self, request, format=None):
+        try:
+            id = ''.join(random.choices(string.ascii_uppercase +
+                                        string.digits, k=10))
+            device = request.data["device"]
+            devicestatus = request.data["devicestatus"]
+            timesettings = request.data["timesettings"]
+            if device == "Led":
+                if devicestatus == "On":
+                    cron.cronAtSpecificTime(
+                        "lib-circuit g --turnonled", id, device, devicestatus, timesettings)
+                else:
+                    cron.cronAtSpecificTime(
+                        "lib-circuit g --turnoffled", id, device, devicestatus, timesettings)
+            return Response(status=status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    # def delete(self, request, *args, **kwargs):
+    #     try:
+    #         id = request.query_params["id"]
+
+
 class LedManage(APIView):
     serializer_class = Led_dataSerializer
 
@@ -78,7 +106,7 @@ class LedManage(APIView):
                         {
                             'type': 'led_notification',
                             'target': 'led',
-                            'data': "On"
+                            'data': {"status": "On"}
                         }
                     )
                 elif led_status == "turnoff":
@@ -90,7 +118,7 @@ class LedManage(APIView):
                         {
                             'type': 'led_notification',
                             'target': 'led',
-                            'data': "Off"
+                            'data': {"status": "Off"}
                         }
                     )
                 else:
@@ -98,6 +126,21 @@ class LedManage(APIView):
             return Response(result, status=status.HTTP_200_OK)
         except Exception as e:
             print(e)
+
+    def post(self, request, format=None):
+        print("sned oke")
+        channel_layer = get_channel_layer()
+        group_name = 'group_led'
+        print("cc")
+        async_to_sync(channel_layer.group_send)(
+            group_name,
+            {
+                'type': 'led_notification',
+                'target': 'led',
+                'data': request.data
+            }
+        )
+        return Response(status=status.HTTP_200_OK)
 
 
 class DHT11Manage(APIView):
@@ -131,11 +174,12 @@ class DHT11Manage(APIView):
 
     def post(self, request, format=None):
         channel_layer = get_channel_layer()
-        group_name = 'group_DHT11'
+        group_name = 'group_dht11'
         async_to_sync(channel_layer.group_send)(
             group_name,
             {
                 'type': 'logDHT11_collect',
+                'target': 'dht11',
                 'data': request.data
             }
         )
