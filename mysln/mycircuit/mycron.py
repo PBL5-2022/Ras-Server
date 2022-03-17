@@ -20,11 +20,19 @@ def cronAtSpecificTime(mycommand, id, device, status, timesettings):
         elif i == 4:
             job.month.on(int(listtime[i]))
     my_cron.write()
-    iter2 = my_cron.find_comment(id)
-    logData(id, device, status, str(next(iter2)))
+    iter2 = str(next(my_cron.find_comment(id))).split(" ")
+    timesetting = f"{iter2[0]} {iter2[1]} {iter2[2]} {iter2[3]} {iter2[4]}"
+    logData(id, device, status, timesetting)
 
 
 def listCron():
+    result = ""
+    for job in my_cron:
+        result += job.comment+":"
+    return result[0:len(result)-1]
+
+
+def printCron():
     for job in my_cron:
         print(job)
 
@@ -40,14 +48,19 @@ def logData(id, device, status, timesetting):
     conn.close()
 
 
-def removeCron():
+def removeAllCron():
     my_cron.remove_all()
     my_cron.write()
 
+def removeSpecificCron(id):
+    for job in my_cron :
+        if job.comment == id:
+            my_cron.remove(job)
+            my_cron.write()
 
 if __name__ == "__main__":
     # os.system("lib-circuit 12 --turnon")
     # cronAtSpecificTime("lib-circuit g --turnoffled",
     #                    "i11d22255", "led", "TurnOn", "39")
-    listCron()
-    removeCron()
+    printCron()
+    # removeAllCron()

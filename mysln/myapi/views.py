@@ -1,4 +1,3 @@
-
 from random import gauss
 from rest_framework import viewsets
 from rest_framework.views import APIView
@@ -11,7 +10,7 @@ import os
 import json
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view
 from django_filters.rest_framework import DjangoFilterBackend
 from mycircuit import led
 import string
@@ -25,7 +24,6 @@ class HeroViewSet(viewsets.ModelViewSet):
 
     @action(methods=['get'], detail=True)
     def get_by_id(self, request, alias=None):
-        print("ddd")
         if alias:
             # item = Hero.objects.filter(id_gte=id).filter(timestamp_gte = fromtime)
             item = models.Hero.objects.filter(
@@ -55,10 +53,35 @@ class CarsAPIView(APIView):
 
         return Response(serializer.data)
 
+class ScheduleManage_Cron(APIView):
 
-class ScheduleManage(APIView):
-    serializer_class = Schedule_dataSerializer
+    def get(self, request, *args, **kwargs):
 
+        try:
+            id = None
+            result = ""
+            if "id" in request.query_params:
+                id = request.query_params["id"]
+            if id is None:
+                result = cron.listCron()
+            
+        except Exception as e:
+            print(e)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(result, status=status.HTTP_200_OK)
+    def delete(self, request, *args, **kwargs):
+        try:
+            id = None
+            result = ""
+            if "id" in request.query_params:
+                cron.removeSpecificCron(request.query_params["id"])
+            else :
+                cron.removeAllCron()
+            return Response(status=status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
     def post(self, request, format=None):
         try:
             id = ''.join(random.choices(string.ascii_uppercase +
@@ -77,6 +100,39 @@ class ScheduleManage(APIView):
         except Exception as e:
             print(e)
             return Response(status=status.HTTP_400_BAD_REQUEST)
+        
+class ScheduleManage(APIView):
+    serializer_class = Schedule_dataSerializer
+
+    def get_queryset(self):
+        print("schedule")
+        schedules = models.Schedule.objects.all()
+        return schedules
+
+    def get(self, request, *args, **kwargs):
+
+        try:
+            id = None
+            cronrequest = None
+            result = ""
+            if "id" in request.query_params:
+                id = request.query_params["id"]
+            if "cron" in request.query_params:
+                cronrequest = request.query_params["cron"]
+            if id != None:
+                if cronrequest is None or cronrequest == "0":
+                    schedule = models.Schedule.objects.get(id=id)
+                    serializer = Schedule_dataSerializer(schedule)
+                    result = serializer.data
+                else:
+                    result = cron.listCron()
+        except:
+            schedules = self.get_queryset()
+            serializer = Schedule_dataSerializer(schedules, many=True)
+
+        return Response(result, status=status.HTTP_200_OK)
+
+    
 
     # def delete(self, request, *args, **kwargs):
     #     try:
@@ -128,10 +184,8 @@ class LedManage(APIView):
             print(e)
 
     def post(self, request, format=None):
-        print("sned oke")
         channel_layer = get_channel_layer()
         group_name = 'group_led'
-        print("cc")
         async_to_sync(channel_layer.group_send)(
             group_name,
             {
@@ -163,7 +217,6 @@ class DHT11Manage(APIView):
             if "totime" in request.query_params:
                 totime = request.query_params["totime"]
                 dht = dht.filter(timestamp__lte=totime)
-            print(dht)
             serializer = DHT_dataSerializer(dht, many=True)
         except Exception as e:
             print(e)
