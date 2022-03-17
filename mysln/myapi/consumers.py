@@ -40,12 +40,18 @@ class NotificationConsumer(AsyncWebsocketConsumer):
     async def websocket_receive(self, event):
         data_to_get = json.loads(event['text'])
         if "group" in data_to_get:
-            await self.channel_layer.group_add(data_to_get["group"], self.channel_name)
-            await self.send(json.dumps({
-                "type": "websocket.send",
-                "text": "join group "+data_to_get["group"]
-            }))
-
+            if data_to_get['status'] == "join":
+                await self.channel_layer.group_add(data_to_get["group"], self.channel_name)
+                await self.send(json.dumps({
+                    "type": "websocket.send",
+                    "text": "join group :"+data_to_get["group"]
+                }))
+            elif data_to_get['status'] == "leave":
+                await self.channel_layer.group_discard(data_to_get["group"], self.channel_name)
+                await self.send(json.dumps({
+                    "type": "websocket.send",
+                    "text": "leave group :"+data_to_get["group"]
+                }))
     async def websocket_disconnect(self, event):
         print('disconnect', event)
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
