@@ -45,9 +45,9 @@ class Led:
             status = "Off"
         if issocketused == False:
             response = requests.post(
-                'http://localhost:8000/led/', data={
-                                "status": "Off",
-                                "ledname" : request.query_params["ledname"]     
+                'http://localhost:8000/led', data={
+                    "status": status,
+                                "ledname": ledname
                                     })
 
 
