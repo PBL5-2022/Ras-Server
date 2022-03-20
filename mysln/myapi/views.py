@@ -1,3 +1,4 @@
+from http.client import BAD_REQUEST
 from random import gauss
 from rest_framework import viewsets
 from rest_framework.views import APIView
@@ -53,6 +54,7 @@ class CarsAPIView(APIView):
 
         return Response(serializer.data)
 
+
 class ScheduleManage_Cron(APIView):
 
     def get(self, request, *args, **kwargs):
@@ -64,24 +66,26 @@ class ScheduleManage_Cron(APIView):
                 id = request.query_params["id"]
             if id is None:
                 result = cron.listCron()
-            
+
         except Exception as e:
             print(e)
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
         return Response(result, status=status.HTTP_200_OK)
+
     def delete(self, request, *args, **kwargs):
         try:
             id = None
             result = ""
             if "id" in request.query_params:
                 cron.removeSpecificCron(request.query_params["id"])
-            else :
+            else:
                 cron.removeAllCron()
             return Response(status=status.HTTP_200_OK)
         except Exception as e:
             print(e)
             return Response(status=status.HTTP_400_BAD_REQUEST)
+
     def post(self, request, format=None):
         try:
             id = ''.join(random.choices(string.ascii_uppercase +
@@ -89,18 +93,20 @@ class ScheduleManage_Cron(APIView):
             device = request.data["device"]
             devicestatus = request.data["devicestatus"]
             timesettings = request.data["timesettings"]
-            if device == "Led":
+            if "Led" in device:
+                lednum = int(device.replace("Led", ""))
                 if devicestatus == "On":
                     cron.cronAtSpecificTime(
-                        "lib-circuit g --turnonled", id, device, devicestatus, timesettings)
+                        f"lib-circuit {lednum} --turnonled", id, device, devicestatus, timesettings)
                 else:
                     cron.cronAtSpecificTime(
-                        "lib-circuit g --turnoffled", id, device, devicestatus, timesettings)
+                        f"lib-circuit {lednum} --turnoffled", id, device, devicestatus, timesettings)
             return Response(status=status.HTTP_200_OK)
         except Exception as e:
             print(e)
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        
+
+
 class ScheduleManage(APIView):
     serializer_class = Schedule_dataSerializer
 
@@ -132,8 +138,6 @@ class ScheduleManage(APIView):
 
         return Response(result, status=status.HTTP_200_OK)
 
-    
-
     # def delete(self, request, *args, **kwargs):
     #     try:
     #         id = request.query_params["id"]
@@ -148,13 +152,18 @@ class LedManage(APIView):
 
     def get(self, request, *args, **kwargs):
         try:
+            if "ledname" in request.query_params:
+                lednum = int(
+                    request.query_params["ledname"].replace("Led", ""))
+            else:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
             result = ""
             g = led.Led()
             dht = models.DHT_data.objects
             if "ledstatus" in request.query_params:
                 led_status = request.query_params["ledstatus"]
                 if led_status == "turnon":
-                    result = g.turnOn()
+                    result = g.turnOn(lednum)
                     channel_layer = get_channel_layer()
                     group_name = 'group_led'
                     async_to_sync(channel_layer.group_send)(
@@ -162,11 +171,14 @@ class LedManage(APIView):
                         {
                             'type': 'led_notification',
                             'target': 'led',
-                            'data': {"status": "On"}
+                            'data': {
+                                "status": "On",
+                                "ledname" : request.query_params["ledname"]     
+                                    }
                         }
                     )
                 elif led_status == "turnoff":
-                    result = g.turnOff()
+                    result = g.turnOff(lednum)
                     channel_layer = get_channel_layer()
                     group_name = 'group_led'
                     async_to_sync(channel_layer.group_send)(
@@ -174,14 +186,20 @@ class LedManage(APIView):
                         {
                             'type': 'led_notification',
                             'target': 'led',
-                            'data': {"status": "Off"}
+                            'data': {
+                                "status": "Off",
+                                "ledname" : request.query_params["ledname"]     
+                                    }
                         }
                     )
+                elif led_status == "status":
+                    result = g.status(lednum)
                 else:
-                    result = g.status()
+                    return Response(status=status.HTTP_400_BAD_REQUEST)
             return Response(result, status=status.HTTP_200_OK)
         except Exception as e:
             print(e)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def post(self, request, format=None):
         channel_layer = get_channel_layer()

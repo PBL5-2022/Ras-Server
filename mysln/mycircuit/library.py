@@ -13,9 +13,9 @@ def main():
 
     parser = argparse.ArgumentParser(prog=prog, description=description)
 
-    parser.add_argument('timestamp',
+    parser.add_argument('lednum',
                         type=str,
-                        help='A relative file path')
+                        help='Led number')
 
     parser.add_argument('--turnonled', action='store_true',
                         help='Turn On Led')
@@ -27,12 +27,12 @@ def main():
                         help='Count the lines of the files')
 
     options = parser.parse_args()
-    timestamp = options.timestamp
+    lednum = int(options.lednum)
 
     if options.turnonled:
-        l.turnOn(False)
+        l.turnOn(lednum,False)
     if options.turnoffled:
-        l.turnOff(False)
+        l.turnOff(lednum,False)
 
     if options.only:
         pprint("")

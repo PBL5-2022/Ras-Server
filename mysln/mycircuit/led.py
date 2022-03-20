@@ -7,34 +7,36 @@ dbname = '/home/pi/MyPBL5/DjangoAPI/mysln/db.sqlite3'
 
 
 class Led:
-    def __init__(self):
-        self.ledpin = 20
+    def __init__(self ):
+        self.ledpin = [12,20]
         GPIO.setmode(GPIO.BCM)
         GPIO.setwarnings(False)
-        GPIO.setup(self.ledpin, GPIO.OUT)
+        GPIO.setup(self.ledpin[0], GPIO.OUT)
+        GPIO.setup(self.ledpin[1], GPIO.OUT)
 
-    def turnOn(self, issocketused=True):
-        GPIO.output(self.ledpin, GPIO.HIGH)
-        self.logData("1", issocketused)
+    def turnOn(self,lednum, issocketused=True ):
+        GPIO.output(self.ledpin[lednum], GPIO.HIGH)
+        self.logData("1",lednum, issocketused)
         return "Turned on successfullly"
 
-    def turnOff(self, issocketused=True):
-        GPIO.output(self.ledpin, GPIO.LOW)
-        self.logData("0", issocketused)
+    def turnOff(self,lednum, issocketused=True):
+        GPIO.output(self.ledpin[lednum], GPIO.LOW)
+        self.logData("0",lednum, issocketused)
         return "Turned off successfullly"
 
-    def status(self):
-        if(GPIO.input(self.ledpin) == GPIO.LOW):
+    def status(self,lednum):
+        if(GPIO.input(self.ledpin[self.lednum]) == GPIO.LOW):
             return "Off"
-        if(GPIO.input(self.ledpin) == GPIO.HIGH):
+        if(GPIO.input(self.ledpin[self.lednum]) == GPIO.HIGH):
             return "On"
 
-    def logData(self, status, issocketused):
+    def logData(self, status,lednum, issocketused):
+        ledname ="Led"+str(lednum)
         conn = sqlite3.connect(dbname)
         curs = conn.cursor()
 
-        curs.execute(
-            "INSERT INTO myapi_led_data(timestamp,status) values(datetime('now'), (?))", status)
+        curs.execute(   
+            "INSERT INTO myapi_led_data(timestamp,status,ledname) values(datetime('now'), (?),(?))", (status,ledname))
         conn.commit()
         conn.close()
         if status == "1":
@@ -43,7 +45,10 @@ class Led:
             status = "Off"
         if issocketused == False:
             response = requests.post(
-                'http://localhost:8000/led/', data={"status": status})
+                'http://localhost:8000/led/', data={
+                                "status": "Off",
+                                "ledname" : request.query_params["ledname"]     
+                                    })
 
 
 if __name__ == "__main__":

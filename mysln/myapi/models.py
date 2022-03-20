@@ -1,7 +1,7 @@
 # models.py
 from django.db import models
 from django.conf import settings
-
+import time 
 
 class Hero(models.Model):
     name = models.CharField(max_length=60)
@@ -37,14 +37,14 @@ class DHT_data(models.Model):
 
 
 class Led_Data(models.Model):
-    timestamp = models.DateTimeField(null=False)
-    status = models.BooleanField(null=False)  # 1 la den sang , 0 la den tat
-
+    timestamp = models.DateTimeField(null=False , default = '2022-01-01')
+    status = models.BooleanField(null=False , default= False)  # 1 la den sang , 0 la den tat
+    ledname = models.CharField(max_length=20)
     class Meta:
         ordering = ["-timestamp"]
 
     def __str__(self):
-        return str(self.status + " : "+self.timestamp)
+        return str(self.status + " : "+self.timestamp+" : "+self.ledname)
 
 
 class Schedule(models.Model):
