@@ -16,6 +16,12 @@ class DHT_dataSerializer(serializers.ModelSerializer):
         fields = ('id', 'timestamp', 'temp', 'hum')
 
 
+class BH1750_dataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.BH1750_data
+        fields = ('id', 'timestamp', 'lightlevel')
+
+
 class Led_dataSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Led_Data

@@ -1,0 +1,6 @@
+{
+    "status": true,
+    "threshold": 15,
+    "device": "led",
+    "devicenum": 0
+}

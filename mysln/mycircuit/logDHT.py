@@ -3,7 +3,7 @@ import sqlite3
 import Adafruit_DHT
 import requests
 dbname = '/home/pi/MyPBL5/DjangoAPI/mysln/db.sqlite3'
-sampleFreq = 2  # time in seconds
+sampleFreq = 1  # time in seconds
 
 # get data from DHT sensorcd
 
@@ -26,7 +26,6 @@ class LogDHT:
     # log sensor data on database
 
     def logData(self, temp, hum):
-
         conn = sqlite3.connect(dbname)
         curs = conn.cursor()
 
@@ -40,6 +39,7 @@ class LogDHT:
     def test(self):
         while True:
             temp, hum = self.getDHTdata()
+            self.logData(temp,hum)
             # with open("/home/pi/timestamp.txt", "a") as f:
             #     f.write("Temp is: " + str(temp) + "Hum is : "+str(hum) + "\n")
             #     f.close()

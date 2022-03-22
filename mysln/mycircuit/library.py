@@ -13,26 +13,32 @@ def main():
 
     parser = argparse.ArgumentParser(prog=prog, description=description)
 
-    parser.add_argument('lednum',
+    parser.add_argument('num',
                         type=str,
-                        help='Led number')
+                        help='Device number')
 
-    parser.add_argument('--turnonled', action='store_true',
+    parser.add_argument('--onled', action='store_true',
                         help='Turn On Led')
 
-    parser.add_argument('--turnoffled', action='store_true',
+    parser.add_argument('--offled', action='store_true',
                         help='Turn Off Led')
+    
+    parser.add_argument('--onmotor', action='store_true',
+                        help='Turn On Motor')
+    
+    parser.add_argument('--offmotor', action='store_true',
+                        help='Turn Off Motor')
 
     parser.add_argument('-o', '--only', action='store_true',
                         help='Count the lines of the files')
 
     options = parser.parse_args()
-    lednum = int(options.lednum)
+    num = int(options.num)
 
-    if options.turnonled:
-        l.turnOn(lednum,False)
-    if options.turnoffled:
-        l.turnOff(lednum,False)
+    if options.onled:
+        l.turnOn(num,False)
+    if options.offled:
+        l.turnOff(num,False)
 
     if options.only:
         pprint("")

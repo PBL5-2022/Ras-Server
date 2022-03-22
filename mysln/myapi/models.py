@@ -1,7 +1,8 @@
 # models.py
 from django.db import models
 from django.conf import settings
-import time 
+import time
+
 
 class Hero(models.Model):
     name = models.CharField(max_length=60)
@@ -36,10 +37,27 @@ class DHT_data(models.Model):
         return str(self.timestamp)
 
 
+class BH1750_data(models.Model):
+
+    # id = models.AutoField(primary_key=True)
+    timestamp = models.DateTimeField(null=False)
+    lightlevel = models.DecimalField(max_digits=15, decimal_places=6)
+    # order items in descending order
+
+    class Meta:
+        ordering = ["-timestamp"]
+
+    # the method which defines string output of class
+    def __str__(self):
+        return str(self.timestamp)
+
+
 class Led_Data(models.Model):
-    timestamp = models.DateTimeField(null=False , default = '2022-01-01')
-    status = models.BooleanField(null=False , default= False)  # 1 la den sang , 0 la den tat
+    timestamp = models.DateTimeField(null=False, default='2022-01-01')
+    # 1 la den sang , 0 la den tat
+    status = models.BooleanField(null=False, default=False)
     ledname = models.CharField(max_length=20)
+
     class Meta:
         ordering = ["-timestamp"]
 

@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.generics import ListAPIView
-from .serializers import DHT_dataSerializer, HeroSerializer, Led_dataSerializer, Schedule_dataSerializer
+from .serializers import BH1750_dataSerializer, DHT_dataSerializer, HeroSerializer, Led_dataSerializer, Schedule_dataSerializer
 from myapi import models
 import os
 import json
@@ -97,10 +97,10 @@ class ScheduleManage_Cron(APIView):
                 lednum = int(device.replace("Led", ""))
                 if devicestatus == "On":
                     cron.cronAtSpecificTime(
-                        f"lib-circuit {lednum} --turnonled", id, device, devicestatus, timesettings)
+                        f"lib-circuit {lednum} --onled", id, device, devicestatus, timesettings)
                 else:
                     cron.cronAtSpecificTime(
-                        f"lib-circuit {lednum} --turnoffled", id, device, devicestatus, timesettings)
+                        f"lib-circuit {lednum} --offled", id, device, devicestatus, timesettings)
             return Response(status=status.HTTP_200_OK)
         except Exception as e:
             print(e)
@@ -209,6 +209,47 @@ class LedManage(APIView):
             {
                 'type': 'led_notification',
                 'target': 'led',
+                'data': request.data
+            }
+        )
+        return Response(status=status.HTTP_200_OK)
+
+class BH1750Manage(APIView):
+    serializer_class = BH1750_dataSerializer
+
+    def get_queryset(self):
+        bh1750s = models.BH1750_data.objects.all()
+        return bh1750s
+
+    def get(self, request, *args, **kwargs):
+
+        try:
+            bh1750 = models.BH1750_data.objects
+            if "id" in request.query_params:
+                id = request.query_params["id"]
+                bh1750 = bh1750.filter(id=id)
+            if "fromtime" in request.query_params:
+                fromtime = request.query_params["fromtime"]
+                bh1750 = bh1750.filter(timestamp__gte=fromtime)
+            if "totime" in request.query_params:
+                totime = request.query_params["totime"]
+                bh1750 = bh1750.filter(timestamp__lte=totime)
+            serializer = BH1750_dataSerializer(bh1750, many=True)
+        except Exception as e:
+            print(e)
+            bh1750 = self.get_queryset()
+            serializer = BH1750_dataSerializer(bh1750, many=True)
+
+        return Response(serializer.data)
+
+    def post(self, request, format=None):
+        channel_layer = get_channel_layer()
+        group_name = 'group_bh1750'
+        async_to_sync(channel_layer.group_send)(
+            group_name,
+            {
+                'type': 'bh1750_collect',
+                'target': 'bh1750',
                 'data': request.data
             }
         )
