@@ -4,6 +4,19 @@ from rest_framework import serializers
 from myapi import models
 
 
+class UserSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.User
+        fields = ('email', 'password')
+        extra_kwargs = {'password': {'write_only': True}}
+        
+
+class UserLoginSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)
+    password = serializers.CharField(required=True)
+
+
 class HeroSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = models.Hero

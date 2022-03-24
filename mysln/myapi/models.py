@@ -3,6 +3,24 @@ from django.db import models
 from django.conf import settings
 import time
 
+from django.contrib.auth.models import AbstractUser
+
+
+class User(AbstractUser):
+    # Delete not use field
+    username = None
+    last_login = None
+    is_staff = None
+    is_superuser = None
+
+    password = models.CharField(max_length=100)
+    email = models.EmailField(max_length=100, unique=True)
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
+
+    def __str__(self):
+        return self.email
+
 
 class Hero(models.Model):
     name = models.CharField(max_length=60)
@@ -12,13 +30,13 @@ class Hero(models.Model):
         return self.name
 
 
-class UserStatus(models.Model):
-    user = models.OneToOneField(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='userstatus')
-    status = models.BooleanField(default=False)
+# class UserStatus(models.Model):
+#     user = models.OneToOneField(
+#         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='userstatus')
+#     status = models.BooleanField(default=False)
 
-    def __str__(self):
-        return f"UserStatus of {self.user.username}"
+#     def __str__(self):
+#         return f"UserStatus of {self.user.username}"
 
 
 class DHT_data(models.Model):
