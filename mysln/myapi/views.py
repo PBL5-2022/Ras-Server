@@ -7,11 +7,9 @@ from rest_framework import status
 from rest_framework.generics import ListAPIView
 from .serializers import BH1750_dataSerializer, DHT_dataSerializer, HeroSerializer, Led_dataSerializer, Schedule_dataSerializer, UserLoginSerializer, UserSerializer
 from myapi import models
-import os
-import json
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
-from rest_framework.decorators import action, api_view
+from rest_framework.decorators import action, api_view, permission_classes
 from django_filters.rest_framework import DjangoFilterBackend
 from mycircuit import led
 import string
@@ -21,9 +19,12 @@ from django.contrib.auth import authenticate, login, logout, hashers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework.permissions import IsAuthenticated
 from django.conf import settings
+from django.views.decorators.csrf import ensure_csrf_cookie
+from rest_framework.permissions import AllowAny
 
 
 class UserRegisterView(APIView):
+    permission_classes = (AllowAny,)
     def post(self, request):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
@@ -38,6 +39,7 @@ class UserRegisterView(APIView):
 
 
 class UserLoginView(APIView):
+    permission_classes = (AllowAny,)
     def post(self, request):
         serializer = UserLoginSerializer(data=request.data)
         if serializer.is_valid():
