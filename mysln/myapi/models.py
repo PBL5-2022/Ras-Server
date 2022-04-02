@@ -39,6 +39,12 @@ class Hero(models.Model):
 #         return f"UserStatus of {self.user.username}"
 
 
+class Device(models.Model):
+    name = models.CharField(max_length=50, primary_key=True)
+    type = models.CharField(max_length=60)
+    location = models.CharField(max_length=200)
+    status = models.CharField(max_length=60)
+
 class DHT_data(models.Model):
 
     # id = models.AutoField(primary_key=True)

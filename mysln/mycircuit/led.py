@@ -17,18 +17,18 @@ class Led:
     def turnOn(self, lednum, issocketused=True):
         GPIO.output(self.ledpin[lednum], GPIO.HIGH)
         self.logData("1", lednum, issocketused)
-        return "Turned on successfullly"
+        return f"Led{lednum} on"
 
     def turnOff(self, lednum, issocketused=True):
         GPIO.output(self.ledpin[lednum], GPIO.LOW)
         self.logData("0", lednum, issocketused)
-        return "Turned off successfullly"
+        return f"Led{lednum} off"
 
     def status(self, lednum):
         if(GPIO.input(self.ledpin[self.lednum]) == GPIO.LOW):
-            return "Off"
+            return f"Led{lednum} off"
         if(GPIO.input(self.ledpin[self.lednum]) == GPIO.HIGH):
-            return "On"
+            return f"Led{lednum} on"
 
     def logData(self, status, lednum, issocketused):
         try:
@@ -38,12 +38,15 @@ class Led:
 
             curs.execute(
                 "INSERT INTO myapi_led_data(timestamp,status,ledname) values(datetime('now'), (?),(?))", (status, ledname))
+            if status == "1":
+                status = "on"
+            else:
+                status = "off"
+            curs.execute(
+                "UPDATE myapi_device SET status = (?) WHERE name = (?)", (status, ledname))
             conn.commit()
             conn.close()
-            if status == "1":
-                status = "On"
-            else:
-                status = "Off"
+
             if issocketused == False:
                 response = requests.post(
                     'http://localhost:8000/led', data={

@@ -10,7 +10,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = models.User
         fields = ('email', 'password')
         extra_kwargs = {'password': {'write_only': True}}
-        
+
 
 class UserLoginSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True)
@@ -27,6 +27,12 @@ class DHT_dataSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.DHT_data
         fields = ('id', 'timestamp', 'temp', 'hum')
+
+
+class Device_dataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Device
+        fields = ('name', 'type', 'location', 'status')
 
 
 class BH1750_dataSerializer(serializers.ModelSerializer):

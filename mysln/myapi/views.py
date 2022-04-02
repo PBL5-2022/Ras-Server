@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.generics import ListAPIView
-from .serializers import BH1750_dataSerializer, DHT_dataSerializer, HeroSerializer, Led_dataSerializer, Schedule_dataSerializer, UserLoginSerializer, UserSerializer
+from .serializers import BH1750_dataSerializer, DHT_dataSerializer, Device_dataSerializer, HeroSerializer, Led_dataSerializer, Schedule_dataSerializer, UserLoginSerializer, UserSerializer
 from myapi import models
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
@@ -25,6 +25,7 @@ from rest_framework.permissions import AllowAny
 
 class UserRegisterView(APIView):
     permission_classes = (AllowAny,)
+
     def post(self, request):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
@@ -40,6 +41,7 @@ class UserRegisterView(APIView):
 
 class UserLoginView(APIView):
     permission_classes = (AllowAny,)
+
     def post(self, request):
         serializer = UserLoginSerializer(data=request.data)
         if serializer.is_valid():
@@ -107,6 +109,7 @@ class CarsAPIView(APIView):
 
 
 class ScheduleManage_Cron(APIView):
+    permission_classes = (AllowAny,)
 
     def get(self, request, *args, **kwargs):
 
@@ -159,6 +162,7 @@ class ScheduleManage_Cron(APIView):
 
 
 class ScheduleManage(APIView):
+    permission_classes = (AllowAny,)
     serializer_class = Schedule_dataSerializer
 
     def get_queryset(self):
@@ -195,6 +199,7 @@ class ScheduleManage(APIView):
 
 
 class LedManage(APIView):
+    permission_classes = (AllowAny,)
     serializer_class = Led_dataSerializer
 
     def get_queryset(self):
@@ -267,6 +272,7 @@ class LedManage(APIView):
 
 
 class BH1750Manage(APIView):
+    permission_classes = (AllowAny,)
     serializer_class = BH1750_dataSerializer
 
     def get_queryset(self):
@@ -308,7 +314,57 @@ class BH1750Manage(APIView):
         return Response(status=status.HTTP_200_OK)
 
 
+class DeviceManage(APIView):
+    permission_classes = (AllowAny,)
+    serializer_class = Device_dataSerializer
+
+    def get_queryset(self):
+        devices = models.Device.objects.all()
+        return devices
+
+    def get(self, request, *args, **kwargs):
+        try:
+            dht = models.Device.objects
+            if "name" in request.query_params:
+                dht = dht.filter(name=request.query_params["name"])
+            if "type" in request.query_params:
+                dht = dht.filter(type=request.query_params["type"])
+            if "location" in request.query_params:
+                dht = dht.filter(location=request.query_params["location"])
+            if "status" in request.query_params:
+                dht = dht.filter(status=request.query_params["status"])
+            serializer = Device_dataSerializer(dht, many=True)
+        except Exception as e:
+            print(e)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.data)
+
+    def delete(self, request, *args, **kwargs):
+        try:
+            dht = models.Device.objects
+            if "name" in request.query_params:
+                dht = dht.filter(name=request.query_params["name"])
+                dht.delete()
+                return Response(status=status.HTTP_200_OK)
+            else :
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e :
+            print(e)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    def post(self, request):
+        try : 
+            serializer = Device_dataSerializer(data=request.data)
+            if serializer.is_valid():
+                device = serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response( status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e :
+            print(e)
+            return Response( status=status.HTTP_400_BAD_REQUEST)
+            
 class DHT11Manage(APIView):
+    permission_classes = (AllowAny,)
     serializer_class = DHT_dataSerializer
 
     def get_queryset(self):

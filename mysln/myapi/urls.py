@@ -13,6 +13,7 @@ urlpatterns = [
     path('bh1750', views.BH1750Manage.as_view()),
     path('car/', views.CarsAPIView.as_view()),
     path('led', views.LedManage.as_view()),
+    path('device', views.DeviceManage.as_view()),
     path('schedule/', views.ScheduleManage.as_view()),
     path('schedule/cron', views.ScheduleManage_Cron.as_view()),
     path('api/register', views.UserRegisterView.as_view(), name='register'),
