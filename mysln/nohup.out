@@ -1,0 +1,9 @@
+Watching for file changes with StatReloader
+Listen failure: Couldn't listen on 127.0.0.1:8000: [Errno 98] Address already in use.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+April 10, 2022 - 11:26:46
+Django version 4.0.3, using settings 'mysln.settings'
+Starting ASGI/Channels version 3.0.4 development server at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.

@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.generics import ListAPIView
-from .serializers import BH1750_dataSerializer, DHT_dataSerializer, Device_dataSerializer, HeroSerializer, Led_dataSerializer, Schedule_dataSerializer, UserLoginSerializer, UserSerializer
+from .serializers import BH1750_dataSerializer, DHT_dataSerializer, Device_dataSerializer, HeroSerializer, Led_dataSerializer, UploadSerializer, Schedule_dataSerializer, UserLoginSerializer, UserSerializer
 from myapi import models
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
@@ -21,6 +21,8 @@ from rest_framework.permissions import IsAuthenticated
 from django.conf import settings
 from django.views.decorators.csrf import ensure_csrf_cookie
 from rest_framework.permissions import AllowAny
+from django.core.files.storage import FileSystemStorage
+import requests
 
 
 class UserRegisterView(APIView):
@@ -159,6 +161,53 @@ class ScheduleManage_Cron(APIView):
         except Exception as e:
             print(e)
             return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class UploadViewSet(viewsets.ViewSet):
+    permission_classes = (AllowAny,)
+    serializer_class = UploadSerializer
+
+    def list(self, request):
+        return Response("GET API")
+
+    def create(self, request):
+        file_uploaded = request.FILES['file_uploaded']
+
+        # response = requests.post(
+        #     'http://localhost:8000/test/', files={'file_uploaded': file_uploaded})
+
+        if file_uploaded:
+            # save attached file
+
+            # create a new instance of FileSystemStorage
+            fs = FileSystemStorage()
+            file = fs.save(file_uploaded.name, file_uploaded)
+            # the fileurl variable now contains the url to the file. This can be used to serve the file when needed.
+            fileurl = fs.url(file)
+        response = f"POST API and you have uploaded a {fileurl} file"
+        return Response(response)
+
+
+class TestReceiveFile(viewsets.ViewSet):
+    permission_classes = (AllowAny,)
+
+    def list(self, request):
+        return Response("GET API")
+
+    def create(self, request):
+        file_uploaded = request.FILES['file_uploaded']
+
+        if file_uploaded:
+            # save attached file
+
+            # create a new instance of FileSystemStorage
+            fs = FileSystemStorage()
+            file = fs.save(file_uploaded.name, file_uploaded)
+            # the fileurl variable now contains the url to the file. This can be used to serve the file when needed.
+            fileurl = fs.url(file)
+
+        response = f"POST API and you have uploaded a {fileurl} file"
+        return Response(response)
 
 
 class ScheduleManage(APIView):
@@ -346,23 +395,24 @@ class DeviceManage(APIView):
                 dht = dht.filter(name=request.query_params["name"])
                 dht.delete()
                 return Response(status=status.HTTP_200_OK)
-            else :
+            else:
                 return Response(status=status.HTTP_400_BAD_REQUEST)
-        except Exception as e :
+        except Exception as e:
             print(e)
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def post(self, request):
-        try : 
+        try:
             serializer = Device_dataSerializer(data=request.data)
             if serializer.is_valid():
                 device = serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
-            return Response( status=status.HTTP_400_BAD_REQUEST)
-        except Exception as e :
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
             print(e)
-            return Response( status=status.HTTP_400_BAD_REQUEST)
-            
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
 class DHT11Manage(APIView):
     permission_classes = (AllowAny,)
     serializer_class = DHT_dataSerializer

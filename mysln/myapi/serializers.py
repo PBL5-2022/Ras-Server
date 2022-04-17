@@ -2,6 +2,7 @@
 from rest_framework import serializers
 
 from myapi import models
+from rest_framework.serializers import FileField, ListField
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -51,3 +52,18 @@ class Schedule_dataSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Schedule
         fields = ('id', 'timestamp', 'device', 'status', 'timesetting')
+
+
+class UploadSerializer(serializers.Serializer):
+    file_uploaded = FileField()
+
+    class Meta:
+        fields = ['file_uploaded']
+
+
+# Serializer for multiple files upload.
+class MultipleFilesUploadSerializer(serializers.Serializer):
+    file_uploaded = ListField(child=FileField())
+
+    class Meta:
+        fields = ['file_uploaded']
