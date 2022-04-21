@@ -46,6 +46,12 @@ class Led_dataSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Led_Data
         fields = ('id', 'timestamp', 'status', 'ledname')
+        
+
+class Motor_dataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Motor_Data
+        fields = ('id', 'timestamp', 'dutycycle', 'motorname')
 
 
 class Schedule_dataSerializer(serializers.ModelSerializer):

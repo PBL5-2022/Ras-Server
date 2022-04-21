@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.generics import ListAPIView
-from .serializers import BH1750_dataSerializer, DHT_dataSerializer, Device_dataSerializer, HeroSerializer, Led_dataSerializer, UploadSerializer, Schedule_dataSerializer, UserLoginSerializer, UserSerializer
+from .serializers import BH1750_dataSerializer, DHT_dataSerializer, Device_dataSerializer, HeroSerializer, Led_dataSerializer, Motor_dataSerializer, UploadSerializer, Schedule_dataSerializer, UserLoginSerializer, UserSerializer
 from myapi import models
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
@@ -320,6 +320,51 @@ class LedManage(APIView):
         return Response(status=status.HTTP_200_OK)
 
 
+class MotorManage(APIView):
+    permission_classes = (AllowAny,)
+    serializer_class = Motor_dataSerializer
+
+    def get_queryset(self):
+        motors = models.Motor_Data.objects.all()
+        return motors
+
+    def get(self, request, *args, **kwargs):
+        try:
+            dht = models.Device.objects
+            if "name" in request.query_params:
+                dht = dht.filter(name=request.query_params["name"])
+            if "type" in request.query_params:
+                dht = dht.filter(type=request.query_params["type"])
+            if "location" in request.query_params:
+                dht = dht.filter(location=request.query_params["location"])
+            if "status" in request.query_params:
+                dht = dht.filter(status=request.query_params["status"])
+            serializer = Device_dataSerializer(dht, many=True)
+        except Exception as e:
+            print(e)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.data)
+
+    def post(self, request, format=None):
+        try:
+            name = request.data["name"]
+            value = request.data["value"]
+
+            with open('/home/pi/MyPBL5/DjangoAPI/mysln/mycircuit/data_motor.txt', 'r') as file:
+                data = file.readlines()
+            if name == 'motor1':
+                data[0] = f'motor1,{value}\n'
+            elif name == 'motor2':
+                data[1] = f'motor2,{value}\n'
+            with open('/home/pi/MyPBL5/DjangoAPI/mysln/mycircuit/data_motor.txt', 'w') as file:
+                file.writelines(data)
+
+            return Response(data, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
 class BH1750Manage(APIView):
     permission_classes = (AllowAny,)
     serializer_class = BH1750_dataSerializer
@@ -407,7 +452,9 @@ class DeviceManage(APIView):
             if serializer.is_valid():
                 device = serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            error_list = [serializer.errors[error][0]
+                          for error in serializer.errors]
+            return Response(error_list, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             print(e)
             return Response(status=status.HTTP_400_BAD_REQUEST)

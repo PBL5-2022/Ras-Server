@@ -283,23 +283,27 @@
     "colId": "history",
     "containerId": "",
     "name": "http://localhost:8000/device",
-    "url": "http://localhost:8000/upload/",
+    "url": "http://localhost:8000/motor",
     "method": "POST",
     "sortNum": 0,
     "created": "2022-04-02T02:09:06.695Z",
-    "modified": "2022-04-17T10:43:59.986Z",
+    "modified": "2022-04-21T16:55:20.482Z",
     "headers": [],
     "params": [],
     "body": {
       "type": "formdata",
       "raw": "",
-      "form": [],
-      "files": [
+      "form": [
         {
-          "name": "file",
-          "value": "../../../../cuong/Learn/XLTinHieu/Bai1b(2).jpg"
+          "name": "name",
+          "value": "motor1"
+        },
+        {
+          "name": "value",
+          "value": "0"
         }
-      ]
+      ],
+      "files": []
     },
     "tests": []
   },

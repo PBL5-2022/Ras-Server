@@ -88,6 +88,19 @@ class Led_Data(models.Model):
     def __str__(self):
         return str(self.status + " : "+self.timestamp+" : "+self.ledname)
 
+class Motor_Data(models.Model):
+    timestamp = models.DateTimeField(null=False, default='2022-01-01')
+    # 1 la den sang , 0 la den tat
+    dutycycle = models.IntegerField()
+    motorname = models.CharField(max_length=20)
+
+    class Meta:
+        ordering = ["-timestamp"]
+
+    def __str__(self):
+        return str(self.duty_cycle + " : "+self.timestamp+" : "+self.motorname)
+    
+    
 
 class Schedule(models.Model):
     id = models.CharField(max_length=200, primary_key=True)
