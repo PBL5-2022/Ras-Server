@@ -5,7 +5,7 @@ import sqlite3
 import os
 import requests
 import decimal
-dbname = '/home/pi/MyPBL5/DjangoAPI/mysln/db.sqlite3'
+dbname = '/home/pi/Ras-Server/mysln/db.sqlite3'
 sampleFreq = 1  # time in seconds
 # Define some constants from the datasheet
 

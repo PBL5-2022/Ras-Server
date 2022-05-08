@@ -77,5 +77,8 @@ class NotificationConsumer(AsyncWebsocketConsumer):
     async def led_notification(self, event):
         await self.send(text_data=json.dumps({"target": event['target'], "data": event['data']}))
 
+    async def door_notification(self, event):
+        await self.send(text_data=json.dumps({"target": event['target'], "data": event['data']}))
+
     async def bh1750_collect(self, event):
         await self.send(text_data=json.dumps({"target": event['target'], "data": event['data']}))

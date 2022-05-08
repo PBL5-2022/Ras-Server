@@ -1,0 +1,3 @@
+trigger:False
+countFalse:0
+checkDoor:False

@@ -3,7 +3,7 @@ import RPi.GPIO as GPIO
 import time
 import sqlite3
 import requests
-dbname = '/home/pi/MyPBL5/DjangoAPI/mysln/db.sqlite3'
+dbname = '/home/pi/Ras-Server/mysln/db.sqlite3'
 
 
 class Led:

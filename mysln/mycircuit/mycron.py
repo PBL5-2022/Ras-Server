@@ -2,7 +2,7 @@ from crontab import CronTab
 import os
 import sqlite3
 my_cron = CronTab(user='pi')
-dbname = '/home/pi/MyPBL5/DjangoAPI/mysln/db.sqlite3'
+dbname = '/home/pi/Ras-Server/mysln/db.sqlite3'
 
 
 def cronAtSpecificTime(mycommand, id, device, status, timesettings):
@@ -52,15 +52,17 @@ def removeAllCron():
     my_cron.remove_all()
     my_cron.write()
 
+
 def removeSpecificCron(id):
-    for job in my_cron :
+    for job in my_cron:
         if job.comment == id:
             my_cron.remove(job)
             my_cron.write()
 
+
 if __name__ == "__main__":
-    # os.system("lib-circuit 12 --turnon")
-    # cronAtSpecificTime("lib-circuit g --turnoffled",
-    #                    "i11d22255", "led", "TurnOn", "39")
-    printCron()
-    # removeAllCron()
+    # os.system("lib-circuit 1 --offled")
+    # cronAtSpecificTime("lib-circuit 1 --onled",
+    #                    "i12y224hr", "led", "TurnOn", "49")
+    # printCron()
+    removeAllCron()

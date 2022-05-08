@@ -10,7 +10,6 @@ from myapi import models
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from rest_framework.decorators import action, api_view, permission_classes
-from django_filters.rest_framework import DjangoFilterBackend
 from mycircuit import led
 import string
 import random
@@ -24,7 +23,8 @@ from rest_framework.permissions import AllowAny
 from django.core.files.storage import FileSystemStorage
 import requests
 
-
+door_data_path = "/home/pi/Ras-Server/mysln/mycircuit/data_rfid.txt"
+fan_data_path = "/home/pi/Ras-Server/mysln/mycircuit/data_rfid.txt"
 class UserRegisterView(APIView):
     permission_classes = (AllowAny,)
 
@@ -350,17 +350,84 @@ class MotorManage(APIView):
             name = request.data["name"]
             value = request.data["value"]
 
-            with open('/home/pi/MyPBL5/DjangoAPI/mysln/mycircuit/data_motor.txt', 'r') as file:
+            with open('/home/pi/Ras-Server/mysln/mycircuit/data_motor.txt', 'r') as file:
                 data = file.readlines()
-            if name == 'motor1':
+            if name == 'fan1':
                 data[0] = f'motor1,{value}\n'
-            elif name == 'motor2':
+            elif name == 'fan2':
                 data[1] = f'motor2,{value}\n'
-            with open('/home/pi/MyPBL5/DjangoAPI/mysln/mycircuit/data_motor.txt', 'w') as file:
+            with open('/home/pi/Ras-Server/mysln/mycircuit/data_motor.txt', 'w') as file:
                 file.writelines(data)
 
             return Response(data, status=status.HTTP_200_OK)
         except Exception as e:
+            print(e)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+
+class DoorManage(APIView):
+    permission_classes = (AllowAny,)
+
+    # def get(self, request, *args, **kwargs):
+    #     try:
+    #         dht = models.Device.objects
+    #         if "name" in request.query_params:
+    #             dht = dht.filter(name=request.query_params["name"])
+    #         if "type" in request.query_params:
+    #             dht = dht.filter(type=request.query_params["type"])
+    #         if "location" in request.query_params:
+    #             dht = dht.filter(location=request.query_params["location"])
+    #         if "status" in request.query_params:
+    #             dht = dht.filter(status=request.query_params["status"])
+    #         serializer = Device_dataSerializer(dht, many=True)
+    #     except Exception as e:
+    #         print(e)
+    #         return Response(status=status.HTTP_400_BAD_REQUEST)
+    #     return Response(serializer.data)
+
+    def post(self, request, format=None):
+        try:
+            action = request.data["action"]
+            with open(door_data_path, 'r') as file:
+                data = file.readlines()
+            if action == 'on':
+                data[2] = f'checkDoor:True\n'
+                data[1] = f'countFalse:0\n'
+            elif action == 'off':
+                data[2] = f'checkDoor:False\n'
+                data[1] = f'countFalse:{int(data[1].split(":")[1])+1}\n'
+            elif action =="stop-warning":
+                data[2] = f'checkDoor:False\n'
+                data[1] = f'countFalse:0\n'
+            else :
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+            data[0] = f'trigger:True\n'
+            with open(door_data_path, 'w') as file:
+                file.writelines(data)
+            file.close()
+
+            return Response(status=status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+class DoorNotification(APIView):
+    permission_classes = (AllowAny,)
+    def post(self, request, format=None):
+        try :
+            channel_layer = get_channel_layer()
+            group_name = 'group_door'
+            async_to_sync(channel_layer.group_send)(
+                group_name,
+                {
+                    'type': 'door_notification',
+                    'target': 'door',
+                    'data': request.data
+                }
+            )
+            return Response(status=status.HTTP_200_OK)
+        except Exception as e :
             print(e)
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
@@ -435,10 +502,10 @@ class DeviceManage(APIView):
 
     def delete(self, request, *args, **kwargs):
         try:
-            dht = models.Device.objects
+            device = models.Device.objects
             if "name" in request.query_params:
-                dht = dht.filter(name=request.query_params["name"])
-                dht.delete()
+                device = device.filter(name=request.query_params["name"])
+                device.delete()
                 return Response(status=status.HTTP_200_OK)
             else:
                 return Response(status=status.HTTP_400_BAD_REQUEST)

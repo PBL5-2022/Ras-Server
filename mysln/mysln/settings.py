@@ -41,7 +41,6 @@ INSTALLED_APPS = [
     'myapi.apps.MyapiConfig',
     'rest_framework',
     'channels',
-    'django_filters',
     'mycircuit',
     'rest_framework_simplejwt',
 ]
