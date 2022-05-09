@@ -1,4 +1,4 @@
-
+import json
 import RPi.GPIO as GPIO
 import time
 import sqlite3
@@ -17,22 +17,22 @@ class Led:
     def turnOn(self, lednum, issocketused=True):
         GPIO.output(self.ledpin[lednum], GPIO.HIGH)
         self.logData("1", lednum, issocketused)
-        return f"Led{lednum} on"
+        return f"led{lednum} on"
 
     def turnOff(self, lednum, issocketused=True):
         GPIO.output(self.ledpin[lednum], GPIO.LOW)
         self.logData("0", lednum, issocketused)
-        return f"Led{lednum} off"
+        return f"led{lednum} off"
 
     def status(self, lednum):
         if(GPIO.input(self.ledpin[self.lednum]) == GPIO.LOW):
-            return f"Led{lednum} off"
+            return f"led{lednum} off"
         if(GPIO.input(self.ledpin[self.lednum]) == GPIO.HIGH):
-            return f"Led{lednum} on"
+            return f"led{lednum} on"
 
     def logData(self, status, lednum, issocketused):
         try:
-            ledname = "Led"+str(lednum)
+            ledname = "led"+str(lednum)
             conn = sqlite3.connect(dbname)
             curs = conn.cursor()
 
@@ -49,9 +49,11 @@ class Led:
 
             if issocketused == False:
                 response = requests.post(
-                    'http://localhost:8000/led', data={
-                        "status": status,
-                        "ledname": ledname
+                    'http://localhost:8000/notification', json={
+                        "group_name" :'group_led',
+                        "target" : 'led',
+                        "type" : 'led_notification',
+                        "value" :json.dumps({"action": status , "name" : ledname})
                     })
 
         except Exception as e:

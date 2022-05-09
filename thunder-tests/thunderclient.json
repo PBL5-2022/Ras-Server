@@ -36,24 +36,27 @@
     "colId": "4efb424b-d71c-4d5b-a817-83b3a0a8cefd",
     "containerId": "",
     "name": "Manual turnon/off led",
-    "url": "http://localhost:8000/led?ledname=Led1&ledstatus=turnon",
-    "method": "GET",
+    "url": "http://localhost:8000/led",
+    "method": "POST",
     "sortNum": 10000,
     "created": "2022-03-20T20:15:00.817Z",
-    "modified": "2022-05-08T16:39:08.375Z",
+    "modified": "2022-05-09T02:05:03.458Z",
     "headers": [],
-    "params": [
-      {
-        "name": "ledname",
-        "value": "Led1",
-        "isPath": false
-      },
-      {
-        "name": "ledstatus",
-        "value": "turnon",
-        "isPath": false
-      }
-    ],
+    "params": [],
+    "body": {
+      "type": "formdata",
+      "raw": "",
+      "form": [
+        {
+          "name": "ledname",
+          "value": "led0"
+        },
+        {
+          "name": "ledstatus",
+          "value": "on"
+        }
+      ]
+    },
     "tests": []
   },
   {

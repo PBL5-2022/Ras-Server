@@ -255,48 +255,36 @@ class LedManage(APIView):
         leds = models.Led_Data.objects.all()
         return leds
 
-    def get(self, request, *args, **kwargs):
+    def post(self, request, format=None):
         try:
-            if "ledname" in request.query_params:
+            if "ledname" in request.data:
                 lednum = int(
-                    request.query_params["ledname"].replace("Led", ""))
+                    request.data["ledname"].replace("led", ""))
             else:
                 return Response(status=status.HTTP_400_BAD_REQUEST)
             result = ""
             g = led.Led()
             dht = models.DHT_data.objects
-            if "ledstatus" in request.query_params:
-                led_status = request.query_params["ledstatus"]
-                if led_status == "turnon":
+            if "ledstatus" in request.data:
+                led_status = request.data["ledstatus"]
+                if led_status == "on":
                     result = g.turnOn(lednum)
-                    channel_layer = get_channel_layer()
-                    group_name = 'group_led'
-                    async_to_sync(channel_layer.group_send)(
-                        group_name,
-                        {
-                            'type': 'led_notification',
-                            'target': 'led',
-                            'data': {
-                                "status": "on",
-                                "ledname": request.query_params["ledname"]
-                            }
-                        }
-                    )
-                elif led_status == "turnoff":
+                    requests.post(
+                    'http://localhost:8000/notification', json={
+                        "group_name" :'group_led',
+                        "target" : 'led',
+                        "type" : 'led_notification',
+                        "value" :json.dumps({"action": "on" , "name" : request.data["ledname"]})
+                    })
+                elif led_status == "off":
                     result = g.turnOff(lednum)
-                    channel_layer = get_channel_layer()
-                    group_name = 'group_led'
-                    async_to_sync(channel_layer.group_send)(
-                        group_name,
-                        {
-                            'type': 'led_notification',
-                            'target': 'led',
-                            'data': {
-                                "status": "off",
-                                "ledname": request.query_params["ledname"]
-                            }
-                        }
-                    )
+                    requests.post(
+                    'http://localhost:8000/notification', json={
+                        "group_name" :'group_led',
+                        "target" : 'led',
+                        "type" : 'led_notification',
+                        "value" :json.dumps({"action": "off" , "name" : request.data["ledname"]})
+                    })
                 elif led_status == "status":
                     result = g.status(lednum)
                 else:
@@ -306,18 +294,18 @@ class LedManage(APIView):
             print(e)
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-    def post(self, request, format=None):
-        channel_layer = get_channel_layer()
-        group_name = 'group_led'
-        async_to_sync(channel_layer.group_send)(
-            group_name,
-            {
-                'type': 'led_notification',
-                'target': 'led',
-                'data': request.data
-            }
-        )
-        return Response(status=status.HTTP_200_OK)
+    # def post(self, request, format=None):
+    #     channel_layer = get_channel_layer()
+    #     group_name = 'group_led'
+    #     async_to_sync(channel_layer.group_send)(
+    #         group_name,
+    #         {
+    #             'type': 'led_notification',
+    #             'target': 'led',
+    #             'data': request.data
+    #         }
+    #     )
+    #     return Response(status=status.HTTP_200_OK)
 
 
 class Notification(APIView):
@@ -430,24 +418,7 @@ class DoorManage(APIView):
             print(e)
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-class DoorNotification(APIView):
-    permission_classes = (AllowAny,)
-    def post(self, request, format=None):
-        try :
-            channel_layer = get_channel_layer()
-            group_name = 'group_door'
-            async_to_sync(channel_layer.group_send)(
-                group_name,
-                {
-                    'type': 'door_notification',
-                    'target': 'door',
-                    'data': request.data
-                }
-            )
-            return Response(status=status.HTTP_200_OK)
-        except Exception as e :
-            print(e)
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+
 
 
 class BH1750Manage(APIView):
