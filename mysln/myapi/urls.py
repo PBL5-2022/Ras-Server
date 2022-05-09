@@ -18,6 +18,7 @@ urlpatterns = [
     path('fan', views.MotorManage.as_view()),
     path('door', views.DoorManage.as_view()),
     path('door-notification', views.DoorNotification.as_view()),
+    path('notification', views.Notification.as_view()),
     path('device', views.DeviceManage.as_view()),
     path('schedule/', views.ScheduleManage.as_view()),
     path('schedule/cron', views.ScheduleManage_Cron.as_view()),

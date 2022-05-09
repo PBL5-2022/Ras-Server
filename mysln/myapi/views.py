@@ -4,7 +4,6 @@ from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.generics import ListAPIView
 from .serializers import BH1750_dataSerializer, DHT_dataSerializer, Device_dataSerializer, HeroSerializer, Led_dataSerializer, Motor_dataSerializer, UploadSerializer, Schedule_dataSerializer, UserLoginSerializer, UserSerializer
 from myapi import models
 from asgiref.sync import async_to_sync
@@ -22,6 +21,7 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from rest_framework.permissions import AllowAny
 from django.core.files.storage import FileSystemStorage
 import requests
+import json
 
 door_data_path = "/home/pi/Ras-Server/mysln/mycircuit/data_rfid.txt"
 fan_data_path = "/home/pi/Ras-Server/mysln/mycircuit/data_rfid.txt"
@@ -277,7 +277,7 @@ class LedManage(APIView):
                             'type': 'led_notification',
                             'target': 'led',
                             'data': {
-                                "status": "On",
+                                "status": "on",
                                 "ledname": request.query_params["ledname"]
                             }
                         }
@@ -292,7 +292,7 @@ class LedManage(APIView):
                             'type': 'led_notification',
                             'target': 'led',
                             'data': {
-                                "status": "Off",
+                                "status": "off",
                                 "ledname": request.query_params["ledname"]
                             }
                         }
@@ -319,6 +319,24 @@ class LedManage(APIView):
         )
         return Response(status=status.HTTP_200_OK)
 
+
+class Notification(APIView):
+    permission_classes = (AllowAny,)
+    def post(self, request, format=None):
+        channel_layer = get_channel_layer()
+        group_name = request.data['group_name']
+        print(type(request.data))
+        print(str(request.data['value']))
+        print(request.data['type'])
+        async_to_sync(channel_layer.group_send)(
+            group_name,
+            {
+                'type': request.data['type'],
+                'target': request.data['target'],
+                'data': json.loads(request.data['value'])
+            }
+        )
+        return Response(status=status.HTTP_200_OK)
 
 class MotorManage(APIView):
     permission_classes = (AllowAny,)

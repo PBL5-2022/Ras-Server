@@ -2,10 +2,10 @@ import RPi.GPIO as GPIO
 from mfrc522 import SimpleMFRC522
 from gpiozero import Buzzer
 from time import sleep
-import signal
 import time
 import os
 import requests
+import json
 file_path = "/home/pi/Ras-Server/mysln/mycircuit/data_rfid.txt"
  
 ####rfid
@@ -25,7 +25,6 @@ p.start(2)  # Initialization
 
 ####led
 ledpin=33;
-GPIO.setwarnings(False)
 GPIO.setup(ledpin, GPIO.OUT)
 
 modifiedOn = os.path.getmtime(file_path)
@@ -60,14 +59,15 @@ try:
                 if countFalse >3 :
                     action ='warning'
                 response = requests.post(
-                        'http://localhost:8000/door-notification', data={
-                            "action": action
+                        'http://localhost:8000/notification', json={
+                            "group_name" :'group_door',
+                            "target" : 'door',
+                            "type" : 'door_notification',
+                            "value" :json.dumps({"action": action})
+                            
                         })
 
             
-
-
-        print(f"count false : {countFalse}")
         if countFalse > 3 : 
             buzzer.on()
  
@@ -131,6 +131,6 @@ try:
                     file.writelines(data)
                 file.close()
         
-except KeyboardInterrupt:
+except Exception as e:
     GPIO.cleanup()
     raise
