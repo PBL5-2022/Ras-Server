@@ -1,3 +1,4 @@
+import json
 import time
 import sqlite3
 import Adafruit_DHT
@@ -43,9 +44,19 @@ class LogDHT:
             # with open("/home/pi/timestamp.txt", "a") as f:
             #     f.write("Temp is: " + str(temp) + "Hum is : "+str(hum) + "\n")
             #     f.close()
-            response = requests.post(
-                'http://localhost:8000/dht11/', data={'temp': temp,
-                                                      'hump': hum})
+            # response = requests.post(
+            #     'http://localhost:8000/dht11/', data={'temp': temp,
+            #                                           'hump': hum})
+
+
+            requests.post(
+                    'http://localhost:8000/notification', json={
+                        "group_name" :'group_dht11',
+                        "target" : 'dht11',
+                        "type" : 'logDHT11_collect',
+                        "value" :json.dumps({"action": {'temp': temp,'hump': hum} , "name" : 'temperature and humidity sensor'})
+                    })
+
             time.sleep(sampleFreq)
 
     # ------------ Execute program

@@ -2,7 +2,8 @@ import RPi.GPIO as GPIO
 import os
 import time
 import traceback
-
+import json
+import requests 
 
 class MotorControl:
     def __init__(self):
@@ -55,6 +56,7 @@ class MotorControl:
     def readFile(self):
         valueA = 0
         valueB = 0
+        
         with open(self.file_path) as f:
             lines = f.readlines()
             for line in lines:

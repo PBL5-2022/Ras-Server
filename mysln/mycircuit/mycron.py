@@ -62,7 +62,9 @@ def removeSpecificCron(id):
 
 if __name__ == "__main__":
     # os.system("lib-circuit 1 --offled")
-    # cronAtSpecificTime("lib-circuit 1 --onled",
-    #                    "i12y224hr", "led", "TurnOn", "49")
-    # printCron()
-    removeAllCron()
+    cronAtSpecificTime("lib-circuit 1 --offled",
+                       "i12hjkjj4hr", "led", "turnOn", "42")
+    # cronAtSpecificTime("touch /home/pi/ledcc.txt",
+    #                 "ihsj4hr", "led", "turnOn", "30")
+    printCron()
+    # removeAllCron()

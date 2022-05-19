@@ -76,8 +76,15 @@ def main():
             #         f.close()
 
             # print("Light Level : " + format(lightLevel, '.2f') + " lx")
-            response = requests.post(
-                'http://localhost:8000/bh1750', data={'light': format(lightLevel, '.2f')})
+
+            requests.post(
+                    'http://localhost:8000/notification', json={
+                        "group_name" :'group_bh1750',
+                        "target" : 'bh1750',
+                        "type" : 'bh1750_collect',
+                        "value" :json.dumps({"action": format(lightLevel, '.2f') , "name" : 'light sensor'})
+                    })
+
             time.sleep(sampleFreq)
         except Exception as e:
             pass

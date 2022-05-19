@@ -52,6 +52,12 @@ class NotificationConsumer(AsyncWebsocketConsumer):
                     "type": "websocket.send",
                     "text": "leave group :"+data_to_get["group"]
                 }))
+            elif data_to_get['status'] == "list":
+                list_group = await self.channel_layer.groups(self.channel_name)
+                await self.send(json.dumps({
+                    "type": "websocket.send",
+                    "text": "list group :"+list_group
+                }))
     async def websocket_disconnect(self, event):
         print('disconnect', event)
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)

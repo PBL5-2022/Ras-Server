@@ -109,6 +109,43 @@ class CarsAPIView(APIView):
 
         return Response(serializer.data)
 
+class ScheduleManage(APIView):
+    permission_classes = (AllowAny,)
+    serializer_class = Schedule_dataSerializer
+
+    def get_queryset(self):
+        print("schedule")
+        schedules = models.Schedule.objects.all()
+        return schedules
+
+    def get(self, request, *args, **kwargs):
+
+        try:
+            id = None
+            cronrequest = None
+            result = ""
+            if "id" in request.query_params:
+                id = request.query_params["id"]
+            if "cron" in request.query_params:
+                cronrequest = request.query_params["cron"]
+            if id != None:
+                if cronrequest is None or cronrequest == "0":
+                    schedule = models.Schedule.objects.get(id=id)
+                    serializer = Schedule_dataSerializer(schedule)
+                    result = serializer.data
+                else:
+                    result = cron.listCron()
+        except:
+            schedules = self.get_queryset()
+            serializer = Schedule_dataSerializer(schedules, many=True)
+
+        return Response(result, status=status.HTTP_200_OK)
+
+    # def delete(self, request, *args, **kwargs):
+    #     try:
+    #         id = request.query_params["id"]
+
+
 
 class ScheduleManage_Cron(APIView):
     permission_classes = (AllowAny,)
@@ -150,8 +187,8 @@ class ScheduleManage_Cron(APIView):
             devicestatus = request.data["devicestatus"]
             timesettings = request.data["timesettings"]
             if "Led" in device:
-                lednum = int(device.replace("Led", ""))
-                if devicestatus == "On":
+                lednum = int(device.replace("led", ""))
+                if devicestatus == "on":
                     cron.cronAtSpecificTime(
                         f"lib-circuit {lednum} --onled", id, device, devicestatus, timesettings)
                 else:
@@ -210,41 +247,6 @@ class TestReceiveFile(viewsets.ViewSet):
         return Response(response)
 
 
-class ScheduleManage(APIView):
-    permission_classes = (AllowAny,)
-    serializer_class = Schedule_dataSerializer
-
-    def get_queryset(self):
-        print("schedule")
-        schedules = models.Schedule.objects.all()
-        return schedules
-
-    def get(self, request, *args, **kwargs):
-
-        try:
-            id = None
-            cronrequest = None
-            result = ""
-            if "id" in request.query_params:
-                id = request.query_params["id"]
-            if "cron" in request.query_params:
-                cronrequest = request.query_params["cron"]
-            if id != None:
-                if cronrequest is None or cronrequest == "0":
-                    schedule = models.Schedule.objects.get(id=id)
-                    serializer = Schedule_dataSerializer(schedule)
-                    result = serializer.data
-                else:
-                    result = cron.listCron()
-        except:
-            schedules = self.get_queryset()
-            serializer = Schedule_dataSerializer(schedules, many=True)
-
-        return Response(result, status=status.HTTP_200_OK)
-
-    # def delete(self, request, *args, **kwargs):
-    #     try:
-    #         id = request.query_params["id"]
 
 
 class LedManage(APIView):
@@ -294,18 +296,6 @@ class LedManage(APIView):
             print(e)
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-    # def post(self, request, format=None):
-    #     channel_layer = get_channel_layer()
-    #     group_name = 'group_led'
-    #     async_to_sync(channel_layer.group_send)(
-    #         group_name,
-    #         {
-    #             'type': 'led_notification',
-    #             'target': 'led',
-    #             'data': request.data
-    #         }
-    #     )
-    #     return Response(status=status.HTTP_200_OK)
 
 
 class Notification(APIView):
@@ -375,23 +365,6 @@ class MotorManage(APIView):
 class DoorManage(APIView):
     permission_classes = (AllowAny,)
 
-    # def get(self, request, *args, **kwargs):
-    #     try:
-    #         dht = models.Device.objects
-    #         if "name" in request.query_params:
-    #             dht = dht.filter(name=request.query_params["name"])
-    #         if "type" in request.query_params:
-    #             dht = dht.filter(type=request.query_params["type"])
-    #         if "location" in request.query_params:
-    #             dht = dht.filter(location=request.query_params["location"])
-    #         if "status" in request.query_params:
-    #             dht = dht.filter(status=request.query_params["status"])
-    #         serializer = Device_dataSerializer(dht, many=True)
-    #     except Exception as e:
-    #         print(e)
-    #         return Response(status=status.HTTP_400_BAD_REQUEST)
-    #     return Response(serializer.data)
-
     def post(self, request, format=None):
         try:
             action = request.data["action"]
@@ -450,18 +423,6 @@ class BH1750Manage(APIView):
 
         return Response(serializer.data)
 
-    def post(self, request, format=None):
-        channel_layer = get_channel_layer()
-        group_name = 'group_bh1750'
-        async_to_sync(channel_layer.group_send)(
-            group_name,
-            {
-                'type': 'bh1750_collect',
-                'target': 'bh1750',
-                'data': request.data
-            }
-        )
-        return Response(status=status.HTTP_200_OK)
 
 
 class DeviceManage(APIView):
@@ -544,16 +505,3 @@ class DHT11Manage(APIView):
             serializer = DHT_dataSerializer(dht, many=True)
 
         return Response(serializer.data)
-
-    def post(self, request, format=None):
-        channel_layer = get_channel_layer()
-        group_name = 'group_dht11'
-        async_to_sync(channel_layer.group_send)(
-            group_name,
-            {
-                'type': 'logDHT11_collect',
-                'target': 'dht11',
-                'data': request.data
-            }
-        )
-        return Response(status=status.HTTP_200_OK)

@@ -62,11 +62,11 @@ class Led:
 
 if __name__ == "__main__":
     g = Led()
-    if g.status == "On":
-        g.turnOff(False)
+    if g.status(0) == "On":
+        g.turnOff(0,False)
     else:
-        g.turnOn(False)
-    g.turnOff(False)
+        g.turnOn(0,False)
+    g.turnOff(0,False)
     print(g.status())
 
 # Ledpin = 20

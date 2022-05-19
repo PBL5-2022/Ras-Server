@@ -1,9 +1,6 @@
 import argparse
-import pathlib
-import pathlib
 from pprint import pprint
 from led import Led
-import os
 
 
 def main():
