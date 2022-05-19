@@ -154,11 +154,16 @@ class ScheduleManage_Cron(APIView):
 
         try:
             id = None
-            result = ""
+            result = []
             if "id" in request.query_params:
                 id = request.query_params["id"]
+                print(id)
+                cron_model = models.Schedule.objects.filter(id=id)
             if id is None:
                 result = cron.listCron()
+                cron_model = models.Schedule.objects.filter(id__in=result)
+            serializer = Schedule_dataSerializer(cron_model, many=True)
+            return Response(serializer.data)
 
         except Exception as e:
             print(e)
@@ -186,7 +191,7 @@ class ScheduleManage_Cron(APIView):
             device = request.data["device"]
             devicestatus = request.data["devicestatus"]
             timesettings = request.data["timesettings"]
-            if "Led" in device:
+            if "led" in device:
                 lednum = int(device.replace("led", ""))
                 if devicestatus == "on":
                     cron.cronAtSpecificTime(

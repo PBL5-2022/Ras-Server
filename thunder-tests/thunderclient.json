@@ -8,7 +8,7 @@
     "method": "POST",
     "sortNum": 10000,
     "created": "2022-03-20T20:15:00.817Z",
-    "modified": "2022-05-10T17:54:02.450Z",
+    "modified": "2022-05-19T15:39:20.006Z",
     "headers": [],
     "params": [],
     "body": {
@@ -25,7 +25,7 @@
         },
         {
           "name": "timesettings",
-          "value": "55"
+          "value": "40"
         }
       ]
     },
@@ -147,9 +147,16 @@
     "method": "GET",
     "sortNum": 20000,
     "created": "2022-03-20T20:48:15.395Z",
-    "modified": "2022-03-20T20:55:32.822Z",
+    "modified": "2022-05-19T15:38:34.082Z",
     "headers": [],
-    "params": [],
+    "params": [
+      {
+        "name": "id",
+        "value": "i12hjkjj4hr",
+        "isDisabled": true,
+        "isPath": false
+      }
+    ],
     "tests": []
   },
   {
@@ -268,6 +275,26 @@
         }
       ]
     },
+    "tests": []
+  },
+  {
+    "_id": "39997605-2642-42e0-a326-8cd462f015b8",
+    "colId": "8e0b3454-fde5-4756-8bce-c686a475c7ca",
+    "containerId": "",
+    "name": "delete cron job",
+    "url": "http://localhost:8000/schedule/cron?id=i12y224hr",
+    "method": "DELETE",
+    "sortNum": 30000,
+    "created": "2022-05-19T15:23:23.066Z",
+    "modified": "2022-05-19T15:23:23.066Z",
+    "headers": [],
+    "params": [
+      {
+        "name": "id",
+        "value": "i12y224hr",
+        "isPath": false
+      }
+    ],
     "tests": []
   }
 ]

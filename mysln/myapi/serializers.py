@@ -23,6 +23,12 @@ class HeroSerializer(serializers.HyperlinkedModelSerializer):
         model = models.Hero
         fields = ('name', 'alias')
 
+class GroupChannel_dataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.DHT_data
+        fields = ('id', 'channelname', 'groupname')
+
+
 
 class DHT_dataSerializer(serializers.ModelSerializer):
     class Meta:

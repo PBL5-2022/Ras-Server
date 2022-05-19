@@ -26,10 +26,10 @@ def cronAtSpecificTime(mycommand, id, device, status, timesettings):
 
 
 def listCron():
-    result = ""
+    result = []
     for job in my_cron:
-        result += job.comment+":"
-    return result[0:len(result)-1]
+        result.append(job.comment)
+    return result
 
 
 def printCron():
@@ -62,8 +62,8 @@ def removeSpecificCron(id):
 
 if __name__ == "__main__":
     # os.system("lib-circuit 1 --offled")
-    cronAtSpecificTime("lib-circuit 1 --offled",
-                       "i12hjkjj4hr", "led", "turnOn", "42")
+    # cronAtSpecificTime("lib-circuit 1 --offled",
+    #                    "i12hjkjj4hr", "led", "turnOn", "42")
     # cronAtSpecificTime("touch /home/pi/ledcc.txt",
     #                 "ihsj4hr", "led", "turnOn", "30")
     printCron()

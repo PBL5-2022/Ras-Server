@@ -145,5 +145,46 @@
       }
     ],
     "tests": []
+  },
+  {
+    "_id": "a028aa2f-eaf8-4199-8efb-8391245464f9",
+    "colId": "history",
+    "containerId": "",
+    "name": "http://localhost:8000/schedule/cron?id=i12y224hr",
+    "url": "http://localhost:8000/schedule/cron?id=i12y224hr",
+    "method": "DELETE",
+    "sortNum": 0,
+    "created": "2022-05-19T15:22:27.997Z",
+    "modified": "2022-05-19T15:22:28.648Z",
+    "headers": [],
+    "params": [
+      {
+        "name": "id",
+        "value": "i12y224hr",
+        "isPath": false
+      }
+    ],
+    "tests": []
+  },
+  {
+    "_id": "a50b2785-4e18-4b83-9fa7-f7f791de8e78",
+    "colId": "history",
+    "containerId": "",
+    "name": "http://localhost:8000/schedule/cron",
+    "url": "http://localhost:8000/schedule/cron",
+    "method": "DELETE",
+    "sortNum": 0,
+    "created": "2022-05-19T15:22:49.186Z",
+    "modified": "2022-05-19T15:22:49.347Z",
+    "headers": [],
+    "params": [
+      {
+        "name": "id",
+        "value": "i12y224hr",
+        "isDisabled": true,
+        "isPath": false
+      }
+    ],
+    "tests": []
   }
 ]

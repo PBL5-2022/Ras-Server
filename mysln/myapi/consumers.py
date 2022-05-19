@@ -3,7 +3,8 @@ from channels.db import database_sync_to_async
 from asgiref.sync import async_to_sync, sync_to_async
 from channels.layers import get_channel_layer
 import json
-
+from myapi.models import GroupChannel
+from myapi.serializers import GroupChannel_dataSerializer
 
 @database_sync_to_async
 def get_user(user_id):
@@ -41,7 +42,8 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         data_to_get = json.loads(event['text'])
         if "group" in data_to_get:
             if data_to_get['status'] == "join":
-                await self.channel_layer.group_add(data_to_get["group"], self.channel_name)
+                c = GroupChannel(groupname =data_to_get["group"],channelname = self.channel_name)
+                # await database_sync_to_async(c.save())()
                 await self.send(json.dumps({
                     "type": "websocket.send",
                     "text": "join group :"+data_to_get["group"]

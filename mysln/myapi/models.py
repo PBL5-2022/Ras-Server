@@ -111,3 +111,10 @@ class Schedule(models.Model):
 
     def __str__(self):
         return str(self.id+" :"+self.device + " : "+self.timesetting+" : "+self.status+": "+self.timestamp)
+
+
+class GroupChannel(models.Model):
+    channelname = models.CharField(max_length=500)
+    groupname = models.CharField(max_length=100)
+
+ 
