@@ -264,16 +264,16 @@ class LedManage(APIView):
 
     def post(self, request, format=None):
         try:
-            if "ledname" in request.data:
+            if "name" in request.data:
                 lednum = int(
-                    request.data["ledname"].replace("led", ""))
+                    request.data["name"].replace("led", ""))
             else:
                 return Response(status=status.HTTP_400_BAD_REQUEST)
             result = ""
             g = led.Led()
             dht = models.DHT_data.objects
-            if "ledstatus" in request.data:
-                led_status = request.data["ledstatus"]
+            if "status" in request.data:
+                led_status = request.data["status"]
                 if led_status == "on":
                     result = g.turnOn(lednum)
                     requests.post(
@@ -281,7 +281,7 @@ class LedManage(APIView):
                         "group_name" :'group_led',
                         "target" : 'led',
                         "type" : 'led_notification',
-                        "value" :json.dumps({"action": "on" , "name" : request.data["ledname"]})
+                        "value" :json.dumps({"action": "on" , "name" : request.data["name"]})
                     })
                 elif led_status == "off":
                     result = g.turnOff(lednum)
@@ -290,7 +290,7 @@ class LedManage(APIView):
                         "group_name" :'group_led',
                         "target" : 'led',
                         "type" : 'led_notification',
-                        "value" :json.dumps({"action": "off" , "name" : request.data["ledname"]})
+                        "value" :json.dumps({"action": "off" , "name" : request.data["name"]})
                     })
                 elif led_status == "status":
                     result = g.status(lednum)
