@@ -19,9 +19,9 @@ class LogDHT:
         DHTpin = 16
         hum, temp = Adafruit_DHT.read_retry(DHT11Sensor, DHTpin)
 
-        if hum is not None and temp is not None:
-            hum = round(hum)
-            temp = round(temp, 1)
+        # if hum is not None and temp is not None:
+        #     hum = round(hum,2)
+        #     temp = round(temp, 2)
         return temp, hum
 
     # log sensor data on database

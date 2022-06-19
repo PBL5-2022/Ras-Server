@@ -5,6 +5,17 @@
             "status": "join"
             }
 - Leave specific group : 
-    + send : {"group" : "group_dht11",
+    + leave : {"group" : "group_dht11",
             "status": "leave"
             }
+
+- Join bh1750 :
+    +send :  {"group" : "group_bh1750",
+   "status": "join"
+    }
+    +leave : 
+     {"group" : "group_bh1750",
+   "status": "leave"
+  }
+
+  group_bh1750 , group_gas,group_door,group_led

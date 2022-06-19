@@ -14,27 +14,27 @@ class MotorControl:
         self.in1 = 5
         self.in2 = 6
 
-        # self.pwmPinB = 18
-        # self.in3 = 19
-        # self.in4 = 26
+        self.pwmPinB = 23
+        self.in3 = 19
+        self.in4 = 26
         GPIO.setmode(GPIO.BCM)
         GPIO.setwarnings(False)
         GPIO.setup(self.pwmPinA, GPIO.OUT)
         GPIO.setup(self.in1, GPIO.OUT)
         GPIO.setup(self.in2, GPIO.OUT)
 
-        # GPIO.setup(self.pwmPinB, GPIO.OUT)
-        # GPIO.setup(self.in3, GPIO.OUT)
-        # GPIO.setup(self.in4, GPIO.OUT)
+        GPIO.setup(self.pwmPinB, GPIO.OUT)
+        GPIO.setup(self.in3, GPIO.OUT)
+        GPIO.setup(self.in4, GPIO.OUT)
 
         GPIO.output(self.in1, 0)
         GPIO.output(self.in2, 1)
 
-        # GPIO.output(self.in3, 0)
-        # GPIO.output(self.in4, 1)
+        GPIO.output(self.in3, 0)
+        GPIO.output(self.in4, 1)
 
         self.pwmA = GPIO.PWM(self.pwmPinA, 50)
-        # self.pwmB = GPIO.PWM(self.pwmPinB, 50)
+        self.pwmB = GPIO.PWM(self.pwmPinB, 50)
 
     def detectChange(self):
         valueA = 0
@@ -48,7 +48,7 @@ class MotorControl:
                     valueA, valueB = self.readFile()
                     print(f"{valueA} {valueB}")
                     self.pwmA.start(valueA)
-                    # self.pwmB.ChangeDutyCycle(valueB)
+                    self.pwmB.start(valueB)
 
         except Exception as e:
             print(traceback.format_exc())

@@ -8,7 +8,7 @@
     "method": "POST",
     "sortNum": 10000,
     "created": "2022-03-20T20:15:00.817Z",
-    "modified": "2022-05-19T15:39:20.006Z",
+    "modified": "2022-05-20T05:03:25.863Z",
     "headers": [],
     "params": [],
     "body": {
@@ -25,7 +25,7 @@
         },
         {
           "name": "timesettings",
-          "value": "40"
+          "value": "4"
         }
       ]
     },
@@ -40,7 +40,7 @@
     "method": "POST",
     "sortNum": 10000,
     "created": "2022-03-20T20:15:00.817Z",
-    "modified": "2022-05-20T04:26:01.522Z",
+    "modified": "2022-06-12T03:45:01.378Z",
     "headers": [],
     "params": [],
     "body": {
@@ -49,7 +49,7 @@
       "form": [
         {
           "name": "name",
-          "value": "led1"
+          "value": "led0"
         },
         {
           "name": "status",
@@ -262,7 +262,7 @@
     "method": "POST",
     "sortNum": 10000,
     "created": "2022-05-08T18:08:26.419Z",
-    "modified": "2022-05-08T18:08:26.419Z",
+    "modified": "2022-06-01T16:03:00.251Z",
     "headers": [],
     "params": [],
     "body": {
@@ -282,16 +282,64 @@
     "colId": "8e0b3454-fde5-4756-8bce-c686a475c7ca",
     "containerId": "",
     "name": "delete cron job",
-    "url": "http://localhost:8000/schedule/cron?id=i12y224hr",
+    "url": "http://localhost:8000/schedule/cron?id=2RMYR3ZX46",
     "method": "DELETE",
     "sortNum": 30000,
     "created": "2022-05-19T15:23:23.066Z",
-    "modified": "2022-05-19T15:23:23.066Z",
+    "modified": "2022-05-20T04:59:41.760Z",
     "headers": [],
     "params": [
       {
         "name": "id",
-        "value": "i12y224hr",
+        "value": "2RMYR3ZX46",
+        "isPath": false
+      }
+    ],
+    "tests": []
+  },
+  {
+    "_id": "3c93efef-127d-41b1-b94f-34d50bf762fe",
+    "colId": "d51822bd-8405-4374-b4f0-b820173466f8",
+    "containerId": "",
+    "name": "Control fan",
+    "url": "http://localhost:8000/fan",
+    "method": "POST",
+    "sortNum": 10000,
+    "created": "2022-06-02T16:23:14.536Z",
+    "modified": "2022-06-02T16:23:14.536Z",
+    "headers": [],
+    "params": [],
+    "body": {
+      "type": "formdata",
+      "raw": "",
+      "form": [
+        {
+          "name": "name",
+          "value": "fan1"
+        },
+        {
+          "name": "value",
+          "value": "0"
+        }
+      ]
+    },
+    "tests": []
+  },
+  {
+    "_id": "f95c5345-7f14-4921-b342-0d6907dbe09d",
+    "colId": "d51822bd-8405-4374-b4f0-b820173466f8",
+    "containerId": "",
+    "name": "Get Fan",
+    "url": "http://localhost:8000/fan?name=fan",
+    "method": "GET",
+    "sortNum": 20000,
+    "created": "2022-06-02T16:28:11.862Z",
+    "modified": "2022-06-02T16:28:11.862Z",
+    "headers": [],
+    "params": [
+      {
+        "name": "name",
+        "value": "fan",
         "isPath": false
       }
     ],

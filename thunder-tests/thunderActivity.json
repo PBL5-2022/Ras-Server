@@ -126,24 +126,24 @@
     "colId": "history",
     "containerId": "",
     "name": "http://localhost:8000/led?ledname=Led1&ledstatus=turnoff",
-    "url": "http://localhost:8000/led?ledname=Led1&ledstatus=turnoff",
-    "method": "GET",
+    "url": "http://0.tcp.ap.ngrok.io:14848/upload",
+    "method": "POST",
     "sortNum": 0,
     "created": "2022-03-20T20:20:36.483Z",
-    "modified": "2022-03-20T20:47:58.207Z",
+    "modified": "2022-06-02T16:56:59.861Z",
     "headers": [],
-    "params": [
-      {
-        "name": "ledname",
-        "value": "Led1",
-        "isPath": false
-      },
-      {
-        "name": "ledstatus",
-        "value": "turnoff",
-        "isPath": false
-      }
-    ],
+    "params": [],
+    "body": {
+      "type": "formdata",
+      "raw": "",
+      "form": [],
+      "files": [
+        {
+          "name": "",
+          "value": "../../../cuong/Pictures/90.jpg"
+        }
+      ]
+    },
     "tests": []
   },
   {

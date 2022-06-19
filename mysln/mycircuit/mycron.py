@@ -13,11 +13,11 @@ def cronAtSpecificTime(mycommand, id, device, status, timesettings):
     for i in range(len(listtime)):
         if i == 0:
             job.minute.on(int(listtime[i]))
-        elif i == 2:
+        elif i == 1:
             job.hour.on(int(listtime[i]))
-        elif i == 3:
+        elif i == 2:
             job.day.on(int(listtime[i]))
-        elif i == 4:
+        elif i == 3:
             job.month.on(int(listtime[i]))
     my_cron.write()
     iter2 = str(next(my_cron.find_comment(id))).split(" ")
@@ -62,8 +62,8 @@ def removeSpecificCron(id):
 
 if __name__ == "__main__":
     # os.system("lib-circuit 1 --offled")
-    # cronAtSpecificTime("lib-circuit 1 --offled",
-    #                    "i12hjkjj4hr", "led", "turnOn", "42")
+    cronAtSpecificTime("lib-circuit 0 --offled 2>>/home/pi/error2.txt",
+                       "i12hjkjj4hrsss", "led", "turnOn", "9:12")
     # cronAtSpecificTime("touch /home/pi/ledcc.txt",
     #                 "ihsj4hr", "led", "turnOn", "30")
     printCron()

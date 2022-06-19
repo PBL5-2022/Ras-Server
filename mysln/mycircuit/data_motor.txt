@@ -1,1 +1,2 @@
 motor1,0
+motor2,30

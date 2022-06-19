@@ -4,7 +4,9 @@ from gpiozero import Buzzer
 from time import sleep
 import time
 import os
+import sqlite3
 import requests
+dbname = '/home/pi/Ras-Server/mysln/db.sqlite3'
 import json
 file_path = "/home/pi/Ras-Server/mysln/mycircuit/data_rfid.txt"
  
@@ -58,6 +60,15 @@ try:
                 
                 if countFalse >3 :
                     action ='warning'
+
+                conn = sqlite3.connect(dbname)
+                curs = conn.cursor()
+
+                curs.execute(
+                    "INSERT INTO myapi_door_data(timestamp,status) values(datetime('now'), (?))", [action])
+                conn.commit()
+                conn.close()
+
                 response = requests.post(
                         'http://localhost:8000/notification', json={
                             "group_name" :'group_door',
@@ -111,7 +122,7 @@ try:
                 trigger = True;
                 print("what id")
                 print(id)
-                if id == 763296750621 : 
+                if id == 564101978074 : 
                     print("righttttttt")
                     countFalse = 0;
                     checkDoor = True;

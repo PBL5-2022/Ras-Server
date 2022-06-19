@@ -88,6 +88,17 @@ class Led_Data(models.Model):
     def __str__(self):
         return str(self.status + " : "+self.timestamp+" : "+self.ledname)
 
+class Door_Data(models.Model):
+    timestamp = models.DateTimeField(null=False, default='2022-01-01')
+    status = models.BooleanField(null=False, default=False)
+
+    class Meta:
+        ordering = ["-timestamp"]
+
+    def __str__(self):
+        return str(self.status + " : "+self.timestamp)
+
+
 class Motor_Data(models.Model):
     timestamp = models.DateTimeField(null=False, default='2022-01-01')
     # 1 la den sang , 0 la den tat

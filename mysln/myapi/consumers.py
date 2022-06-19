@@ -42,8 +42,9 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         data_to_get = json.loads(event['text'])
         if "group" in data_to_get:
             if data_to_get['status'] == "join":
-                c = GroupChannel(groupname =data_to_get["group"],channelname = self.channel_name)
+                # c = GroupChannel(groupname =data_to_get["group"],channelname = self.channel_name)
                 # await database_sync_to_async(c.save())()
+                await self.channel_layer.group_add(data_to_get["group"], self.channel_name)
                 await self.send(json.dumps({
                     "type": "websocket.send",
                     "text": "join group :"+data_to_get["group"]
@@ -89,4 +90,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({"target": event['target'], "data": event['data']}))
 
     async def bh1750_collect(self, event):
+        await self.send(text_data=json.dumps({"target": event['target'], "data": event['data']}))
+
+    async def gas_collect(self, event):
         await self.send(text_data=json.dumps({"target": event['target'], "data": event['data']}))

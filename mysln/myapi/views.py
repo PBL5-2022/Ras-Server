@@ -261,7 +261,7 @@ class LedManage(APIView):
     def get_queryset(self):
         leds = models.Led_Data.objects.all()
         return leds
-
+        
     def post(self, request, format=None):
         try:
             if "name" in request.data:
@@ -271,27 +271,33 @@ class LedManage(APIView):
                 return Response(status=status.HTTP_400_BAD_REQUEST)
             result = ""
             g = led.Led()
-            dht = models.DHT_data.objects
             if "status" in request.data:
                 led_status = request.data["status"]
                 if led_status == "on":
-                    result = g.turnOn(lednum)
-                    requests.post(
-                    'http://localhost:8000/notification', json={
-                        "group_name" :'group_led',
-                        "target" : 'led',
-                        "type" : 'led_notification',
-                        "value" :json.dumps({"action": "on" , "name" : request.data["name"]})
-                    })
+                    print(f"{lednum} {led_status}")
+                    if ("on" in g.status(lednum)):
+                        return Response(data = "led is already on" , status=status.HTTP_400_BAD_REQUEST)
+                    else :
+                        result = g.turnOn(lednum)
+                        requests.post(
+                        'http://localhost:8000/notification', json={
+                            "group_name" :'group_led',
+                            "target" : 'led',
+                            "type" : 'led_notification',
+                            "value" :json.dumps({"action": "on" , "name" : request.data["name"]})
+                        })
                 elif led_status == "off":
-                    result = g.turnOff(lednum)
-                    requests.post(
-                    'http://localhost:8000/notification', json={
-                        "group_name" :'group_led',
-                        "target" : 'led',
-                        "type" : 'led_notification',
-                        "value" :json.dumps({"action": "off" , "name" : request.data["name"]})
-                    })
+                    if ("off" in g.status(lednum)):
+                        return Response(data = "led is already off" , status=status.HTTP_400_BAD_REQUEST)
+                    else :
+                        result = g.turnOff(lednum)
+                        requests.post(
+                        'http://localhost:8000/notification', json={
+                            "group_name" :'group_led',
+                            "target" : 'led',
+                            "type" : 'led_notification',
+                            "value" :json.dumps({"action": "off" , "name" : request.data["name"]})
+                        })
                 elif led_status == "status":
                     result = g.status(lednum)
                 else:

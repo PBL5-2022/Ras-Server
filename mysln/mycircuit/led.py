@@ -25,9 +25,9 @@ class Led:
         return f"led{lednum} off"
 
     def status(self, lednum):
-        if(GPIO.input(self.ledpin[self.lednum]) == GPIO.LOW):
+        if(GPIO.input(self.ledpin[lednum]) == GPIO.LOW):
             return f"led{lednum} off"
-        if(GPIO.input(self.ledpin[self.lednum]) == GPIO.HIGH):
+        if(GPIO.input(self.ledpin[lednum]) == GPIO.HIGH):
             return f"led{lednum} on"
 
     def logData(self, status, lednum, issocketused):
